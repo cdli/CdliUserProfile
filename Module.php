@@ -23,12 +23,34 @@ class Module implements
     public function onBootstrap(Event $e)
     {
         $serviceManager = $e->getTarget()->getServiceManager();
+
+        $serviceManager->get('CdliUserProfile\Service\Profile')->events()->attach('getSections', function($e) use ($serviceManager) {
+            $form = $serviceManager->get('cdliuserprofile_section_zfcuser_form');
+
+            $userData = $serviceManager->get('zfcuser_auth_service')->getIdentity()->toArray(); 
+            unset($userData['password']);
+            $form->setData($userData);
+
+            $obj = new Model\ProfileSection();
+            $obj->setForm($form);
+            $obj->setViewScript('cdli-user-profile/profile/section/zfcuser');
+            $obj->setViewScriptFormKey('registerForm');
+            $e->getTarget()->addSection('zfcuser', $obj);
+        });
     }
 
     public function getServiceConfiguration()
     {
         return array(
-            'factories' => array()
+            'invokables' => array(
+                'cdliuserprofile_section_zfcuser_form' => 'CdliUserProfile\Form\Section\ZfcUser',
+            ),
+            'factories' => array(
+                'CdliUserProfile\Service\Profile' => function($sm) {
+                    $obj = new Service\Profile();
+                    return $obj;
+                },
+            )
         );
     }
 
@@ -49,7 +71,7 @@ class Module implements
     public function modulesLoaded($e)
     {
         $config = $e->getConfigListener()->getMergedConfig(false);
-        static::$options = $config['psaccess-account'];
+        static::$options = $config['cdli-user-profile'];
     }
 
     /**

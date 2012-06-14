@@ -10,11 +10,24 @@ use CdliUserProfile\Module as modCUP;
 
 class ProfileController extends ActionController
 {
+    protected $profileService;
+
     /**
-     * User page 
+     * User Profile Page
      */
     public function indexAction()
     {
-        return new ViewModel();
+        $service = $this->getProfileService();
+        return new ViewModel(array(
+            'sections' => $service->getSections()
+        ));
+    }
+
+    protected function getProfileService()
+    {
+        if ($this->profileService === null) {
+            $this->profileService = $this->getServiceLocator()->get('CdliUserProfile\Service\Profile');
+        }
+        return $this->profileService;
     }
 }

@@ -1,6 +1,27 @@
 <?php
 return array(
-    'cdliuserprofile' => array(),
+    'cdli-user-profile' => array(
+        'field-settings' => array(
+            'zfcuser' => array(
+                'username' => array(
+                    'displayed' => true,
+                    'editable'  => true,
+                ),
+                'email' => array(
+                    'displayed' => true,
+                    'editable'  => true,
+                ),
+                'display_name' => array(
+                    'displayed' => true,
+                    'editable'  => true,
+                ),
+                'password' => array(
+                    'displayed' => true,
+                    'editable'  => true,
+                ),
+            ),
+        ),
+    ),
     'view_manager' => array(
         'template_path_stack' => array(
             'cdliuserprofile' => __DIR__ . '/../view',

@@ -1,0 +1,11 @@
+
+<dl class="zend_form">
+<?php foreach ($this->registerForm->getElements() as $element) { ?>
+    <?php $settingsName = $element->getName() == 'passwordVerify' ? 'password' : $element->getName(); ?>
+    <?php if ( @$this->fieldSettings[$settingsName]['displayed'] ) { ?>
+    <?php   if ($element->getAttribute('label') != null) { ?>
+    <dt><?php echo $this->formLabel($element); ?></dt>
+    <?php } ?>
+    <dd><?php echo ( @$this->fieldSettings[$settingsName]['editable'] === false ? $this->escape($element->getAttribute('value')) : $this->formInput($element) ) . $this->formElementErrors($element); ?></dd>
+<?php }} ?>
+</dl>

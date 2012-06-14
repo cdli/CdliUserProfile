@@ -1,1 +1,14 @@
 <h1><?php echo $this->escape($this->zfcUserIdentity()->getDisplayName()); ?>'s Profile</h2>
+
+<form action="<?php echo $this->url('zfcuser/profile'); ?>" method="POST">
+<?php
+$FieldSettings = \CdliUserProfile\Module::getOption('field-settings');
+foreach ( $this->sections as $name=>$section ) {
+    $vm = $section->getViewModel();
+    $vm->setVariable('fieldSettings', (array)@$FieldSettings[$name]);
+
+    echo $this->render($vm);
+}
+?>
+    <input type="submit" value="Save Profile" />
+</form>
