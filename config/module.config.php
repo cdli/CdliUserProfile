@@ -4,16 +4,16 @@ return array(
         'field-settings' => array(
             'zfcuser' => array(
                 'username' => array(
-                    'displayed' => true,
-                    'editable'  => true,
+                    'displayed' => false,
+                    'editable'  => false,
                 ),
                 'email' => array(
                     'displayed' => true,
                     'editable'  => true,
                 ),
                 'display_name' => array(
-                    'displayed' => true,
-                    'editable'  => true,
+                    'displayed' => false,
+                    'editable'  => false,
                 ),
                 'password' => array(
                     'displayed' => true,
