@@ -23,20 +23,8 @@ class Module implements
     public function onBootstrap(Event $e)
     {
         $serviceManager = $e->getTarget()->getServiceManager();
-
-        $serviceManager->get('CdliUserProfile\Service\Profile')->events()->attach('getSections', function($e) use ($serviceManager) {
-            $form = $serviceManager->get('cdliuserprofile_section_zfcuser_form');
-
-            $userData = $serviceManager->get('zfcuser_auth_service')->getIdentity()->toArray(); 
-            unset($userData['password']);
-            $form->setData($userData);
-
-            $obj = new Model\ProfileSection();
-            $obj->setForm($form);
-            $obj->setViewScript('cdli-user-profile/profile/section/zfcuser');
-            $obj->setViewScriptFormKey('registerForm');
-            $e->getTarget()->addSection('zfcuser', $obj);
-        });
+        $profileEvents = $serviceManager->get('CdliUserProfile\Service\Profile')->events();
+        $profileEvents->attachAggregate($serviceManager->get('CdliUserProfile\Integration\ZfcUser'));
     }
 
     public function getServiceConfiguration()
@@ -50,6 +38,11 @@ class Module implements
                     $obj = new Service\Profile();
                     return $obj;
                 },
+                'CdliUserProfile\Integration\ZfcUser' => function($sm) {
+                    $obj = new Integration\ZfcUser();
+                    $obj->setServiceLocator($sm);
+                    return $obj;
+                }
             )
         );
     }
