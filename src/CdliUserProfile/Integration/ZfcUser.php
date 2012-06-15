@@ -7,6 +7,8 @@ use Zend\EventManager\ListenerAggregateInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use CdliUserProfile\Model\ProfileSection;
+use CdliUserProfile\Module as modCUP;
+use ZfcUser\Util\Password;
 
 class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterface
 {
@@ -32,6 +34,44 @@ class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterfac
     public function attach(EventManagerInterface $events)
     {
         $this->listeners[] = $events->attach('getSections', array($this, 'addFormSection'));
+        $this->listeners[] = $events->attach('save', array($this, 'save'));
+    }
+
+    public function save(EventInterface $e)
+    {
+        $config = modCUP::getOption('field-settings');
+        $section = $e->getTarget()->getSection('zfcuser');
+        $data = $e->getParam('data');
+        $user = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity();
+        $form = $section->getForm();
+        
+        // Determine which fields should be validated
+        $enabledFields = array();
+        foreach ($config['zfcuser'] as $fname=>$fsetting) {
+            if ($fsetting['displayed'] && $fsetting['editable']) {
+                $enabledFields[] = $fname;
+            }
+        }
+        // Drop the password fields if they are empty
+        if (empty($data['password']) || empty($data['passwordVerify'])) {
+            $enabledFields = array_diff($enabledFields, array('password','passwordVerify'));
+        }
+
+        // Populate the form object
+        $form->setValidationGroup($enabledFields);
+        $form->bind($user);
+        $form->setData($data);
+
+        // If it validates...
+        if ($form->isValid()) {
+            // Pull out updated user object...
+            $user = $form->getData();
+            $user->setPassword(Password::hash($user->getPassword()));
+
+            //...and persist it
+            $mapper = $this->getServiceLocator()->get('zfcuser_user_mapper');
+            $mapper->persist($user);
+        }
     }
 
     /**
@@ -42,11 +82,12 @@ class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterfac
     public function addFormSection(EventInterface $e)
     {
         // Pull the form
-        $form = $this->getServiceLocator()->get('cdliuserprofile_section_zfcuser_form');
+        $form = $this->getServiceLocator()->get('CdliUserProfile\Form\Section\ZfcUser');
 
         // Get User Account details
         $userData = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity()->toArray();
         unset($userData['password']);
+
         $form->setData($userData);
 
         $obj = new ProfileSection();

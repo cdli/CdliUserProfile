@@ -30,9 +30,6 @@ class Module implements
     public function getServiceConfiguration()
     {
         return array(
-            'invokables' => array(
-                'cdliuserprofile_section_zfcuser_form' => 'CdliUserProfile\Form\Section\ZfcUser',
-            ),
             'factories' => array(
                 'CdliUserProfile\Service\Profile' => function($sm) {
                     $obj = new Service\Profile();
@@ -42,6 +39,36 @@ class Module implements
                     $obj = new Integration\ZfcUser();
                     $obj->setServiceLocator($sm);
                     return $obj;
+                },
+                'CdliUserProfile\Form\Section\ZfcUser' => function($sm) {
+                    $obj = new Form\Section\ZfcUser();
+                    $obj->setInputFilter($sm->get('CdliUserProfile\Form\Section\ZfcUserFilter'));
+                    $obj->setHydrator($sm->get('zfcuser_user_hydrator'));
+                    return $obj;
+                },
+                'CdliUserProfile\Form\Section\ZfcUserFilter' => function($sm) {
+                    return new Form\Section\ZfcUserFilter(
+                        $sm->get('cdliuseraccount_profile_uemail_validator'),
+                        $sm->get('cdliuseraccount_profile_uusername_validator')
+                    );
+                },
+                'cdliuseraccount_profile_uemail_validator' => function($sm) {
+                    $repository = $sm->get('zfcuser_user_repository');
+                    $user = $sm->get('zfcuser_auth_service')->getIdentity();
+                    return new Validator\NoRecordExistsExceptIgnored(array(
+                        'ignored_record_ids' => is_null($user) ? NULL : $user->getUserId(),
+                        'repository'         => $repository,
+                        'key'                => 'email'
+                    ));
+                },
+                'cdliuseraccount_profile_uusername_validator' => function($sm) {
+                    $repository = $sm->get('zfcuser_user_repository');
+                    $user = $sm->get('zfcuser_auth_service')->getIdentity();
+                    return new Validator\NoRecordExistsExceptIgnored(array(
+                        'ignored_record_ids' => is_null($user) ? NULL : $user->getUserId(),
+                        'repository'         => $repository,
+                        'key'                => 'username'
+                    ));
                 }
             )
         );

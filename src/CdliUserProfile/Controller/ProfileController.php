@@ -18,8 +18,15 @@ class ProfileController extends ActionController
     public function indexAction()
     {
         $service = $this->getProfileService();
+        $sections = $service->getSections();
+
+        if ($this->getRequest()->isPost()) {
+            $data = $this->getRequest()->post()->toArray();
+            $service->save($data);
+        }
+
         return new ViewModel(array(
-            'sections' => $service->getSections()
+            'sections' => $sections
         ));
     }
 

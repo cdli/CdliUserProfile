@@ -22,4 +22,14 @@ class Profile extends EventProvider
         }
         return $this->sections;
     }
+
+    public function getSection($key)
+    {
+        return $this->sections[$key];
+    }
+
+    public function save($data)
+    {
+        $this->events()->trigger(__FUNCTION__, $this, array('data'=>$data));
+    }
 }
