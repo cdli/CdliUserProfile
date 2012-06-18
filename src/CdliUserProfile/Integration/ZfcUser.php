@@ -66,7 +66,11 @@ class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterfac
         if ($form->isValid()) {
             // Pull out updated user object...
             $user = $form->getData();
-            $user->setPassword(Password::hash($user->getPassword()));
+
+            // If they've changed the password, hash it
+            if (in_array('password', $enabledFields)) {
+                $user->setPassword(Password::hash($user->getPassword()));
+            }
 
             //...and persist it
             $mapper = $this->getServiceLocator()->get('zfcuser_user_mapper');
