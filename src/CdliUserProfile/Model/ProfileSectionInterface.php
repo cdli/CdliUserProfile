@@ -17,4 +17,7 @@ interface ProfileSectionInterface
 
     public function setViewModel(ModelInterface $vm);
     public function getViewModel();
+
+    public function setFieldSettings($settings);
+    public function getFieldSettings();
 }

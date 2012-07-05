@@ -14,16 +14,10 @@ class Module implements
     AutoloaderProviderInterface,
     ConfigProviderInterface
 {
-    protected static $options;
-    public function init(ModuleManager $moduleManager)
-    {
-        $moduleManager->events()->attach('loadModules.post', array($this, 'modulesLoaded'));
-    }
-
     public function onBootstrap(Event $e)
     {
         $serviceManager = $e->getTarget()->getServiceManager();
-        $profileEvents = $serviceManager->get('CdliUserProfile\Service\Profile')->events();
+        $profileEvents = $serviceManager->get('CdliUserProfile\Service\Profile')->getEventManager();
         $profileEvents->attachAggregate($serviceManager->get('CdliUserProfile\Integration\ZfcUser'));
     }
 
@@ -31,8 +25,13 @@ class Module implements
     {
         return array(
             'factories' => array(
+                'cdliuserprofile_module_options' => function ($sm) {
+                    $config = $sm->get('Configuration');
+                    return new Options\ModuleOptions($config['cdli-user-profile']);
+                },
+
                 'CdliUserProfile\Service\Profile' => function($sm) {
-                    $obj = new Service\Profile();
+                    $obj = new Service\Profile($sm->get('cdliuserprofile_module_options'));
                     return $obj;
                 },
                 'CdliUserProfile\Integration\ZfcUser' => function($sm) {
@@ -41,32 +40,30 @@ class Module implements
                     return $obj;
                 },
                 'CdliUserProfile\Form\Section\ZfcUser' => function($sm) {
-                    $obj = new Form\Section\ZfcUser();
+                    $obj = new Form\Section\ZfcUser($sm->get('zfcuser_module_options'));
                     $obj->setInputFilter($sm->get('CdliUserProfile\Form\Section\ZfcUserFilter'));
                     $obj->setHydrator($sm->get('zfcuser_user_hydrator'));
                     return $obj;
                 },
                 'CdliUserProfile\Form\Section\ZfcUserFilter' => function($sm) {
                     return new Form\Section\ZfcUserFilter(
-                        $sm->get('cdliuseraccount_profile_uemail_validator'),
-                        $sm->get('cdliuseraccount_profile_uusername_validator')
+                        $sm->get('cdliuserprofile_uemail_validator'),
+                        $sm->get('cdliuserprofile_uusername_validator')
                     );
                 },
-                'cdliuseraccount_profile_uemail_validator' => function($sm) {
-                    $repository = $sm->get('zfcuser_user_repository');
+                'cdliuserprofile_uemail_validator' => function($sm) {
                     $user = $sm->get('zfcuser_auth_service')->getIdentity();
                     return new Validator\NoRecordExistsExceptIgnored(array(
-                        'ignored_record_ids' => is_null($user) ? NULL : $user->getUserId(),
-                        'repository'         => $repository,
+                        'ignored_record_ids' => is_null($user) ? NULL : $user->getId(),
+                        'mapper'             => $sm->get('zfcuser_user_mapper'),
                         'key'                => 'email'
                     ));
                 },
-                'cdliuseraccount_profile_uusername_validator' => function($sm) {
-                    $repository = $sm->get('zfcuser_user_repository');
+                'cdliuserprofile_uusername_validator' => function($sm) {
                     $user = $sm->get('zfcuser_auth_service')->getIdentity();
                     return new Validator\NoRecordExistsExceptIgnored(array(
-                        'ignored_record_ids' => is_null($user) ? NULL : $user->getUserId(),
-                        'repository'         => $repository,
+                        'ignored_record_ids' => is_null($user) ? NULL : $user->getId(),
+                        'mapper'             => $sm->get('zfcuser_user_mapper'),
                         'key'                => 'username'
                     ));
                 }
@@ -86,23 +83,6 @@ class Module implements
                 ),
             ),
         );
-    }
-
-    public function modulesLoaded($e)
-    {
-        $config = $e->getConfigListener()->getMergedConfig(false);
-        static::$options = $config['cdli-user-profile'];
-    }
-
-    /**
-     * @TODO: Come up with a better way of handling module settings/options
-     */
-    public static function getOption($option)
-    {
-        if (!isset(static::$options[$option])) {
-            return null;
-        }
-        return static::$options[$option];
     }
 
     public function getConfig($env = NULL)

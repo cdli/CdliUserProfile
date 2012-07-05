@@ -3,13 +3,23 @@ namespace CdliUserProfile\Service;
 
 use ZfcBase\EventManager\EventProvider;
 use CdliUserProfile\Model\ProfileSectionInterface;
+use CdliUserProfile\Options\ModuleOptions;
 
 class Profile extends EventProvider
 {
     protected $sections = NULL;
+    protected $fieldSettings;
+
+    public function __construct(ModuleOptions $options)
+    {
+        $this->fieldSettings = $options->getFieldSettings();
+    }
 
     public function addSection($name, ProfileSectionInterface $model)
     {
+        $model->setFieldSettings(isset($this->fieldSettings[$name])
+            ? $this->fieldSettings[$name] : array()
+        );
         $this->sections[$name] = $model;
         return $this;
     }
@@ -18,7 +28,7 @@ class Profile extends EventProvider
     {
         if ($this->sections === null) {
             $this->sections = array();
-            $this->events()->trigger(__FUNCTION__, $this);
+            $this->getEventManager()->trigger(__FUNCTION__, $this);
         }
         return $this->sections;
     }
@@ -30,6 +40,6 @@ class Profile extends EventProvider
 
     public function save($data)
     {
-        $this->events()->trigger(__FUNCTION__, $this, array('data'=>$data));
+        $this->getEventManager()->trigger(__FUNCTION__, $this, array('data'=>$data));
     }
 }

@@ -19,7 +19,7 @@ class NoRecordExistsExceptIgnored extends AbstractRecord
         $this->setValue($value);
 
         $result = $this->query($value);
-        if ($result && !in_array($result->getUserId(), $this->ids)) {
+        if ($result && !in_array($result->getId(), $this->ids)) {
             $valid = false;
             $this->error(self::ERROR_RECORD_FOUND);
         }

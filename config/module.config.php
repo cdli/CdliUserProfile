@@ -1,7 +1,7 @@
 <?php
 return array(
     'cdli-user-profile' => array(
-        'field-settings' => array(
+        'field_settings' => array(
             'zfcuser' => array(
                 'username' => array(
                     'displayed' => false,
@@ -27,8 +27,8 @@ return array(
             'cdliuserprofile' => __DIR__ . '/../view',
         ),
     ),
-    'controller' => array(
-        'classes' => array(
+    'controllers' => array(
+        'invokables' => array(
             'cdliuserprofile' => 'CdliUserProfile\Controller\ProfileController',
         ),
     ),

@@ -11,6 +11,7 @@ class ProfileSection implements ProfileSectionInterface
     protected $viewScript;
     protected $viewScriptFormKey;
     protected $viewModel;
+    protected $fieldSettings;
 
     public function setForm(FormInterface $form)
     {
@@ -60,5 +61,16 @@ class ProfileSection implements ProfileSectionInterface
             $this->viewModel->setTemplate($this->getViewScript());
         }
         return $this->viewModel;
+    }
+
+    public function setFieldSettings($settings)
+    {
+        $this->fieldSettings = $settings;
+        return $this;
+    }
+
+    public function getFieldSettings()
+    {
+        return $this->fieldSettings;
     }
 }

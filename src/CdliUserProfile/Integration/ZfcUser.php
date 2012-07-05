@@ -2,52 +2,23 @@
 namespace CdliUserProfile\Integration;
 
 use Zend\EventManager\EventInterface;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use CdliUserProfile\Model\ProfileSection;
-use CdliUserProfile\Module as modCUP;
-use ZfcUser\Util\Password;
+use Zend\Crypt\Password\Bcrypt;
 
-class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterface
+class ZfcUser extends AbstractIntegration implements IntegrationInterface
 {
-    /**
-     * @var \Zend\Stdlib\CallbackHandler[]
-     */
-    protected $listeners = array();
-
-    /**
-     * @var ServiceLocatorInterface
-     */
-    protected $locator;
- 
-    /**
-     * Attach one or more listeners
-     *
-     * Implementors may add an optional $priority argument; the EventManager
-     * implementation will pass this to the aggregate.
-     *
-     * @param EventManagerInterface $events
-     * @param null|int $priority Optional priority "hint" to use when attaching listeners
-     */
-    public function attach(EventManagerInterface $events)
-    {
-        $this->listeners[] = $events->attach('getSections', array($this, 'addFormSection'));
-        $this->listeners[] = $events->attach('save', array($this, 'save'));
-    }
 
     public function save(EventInterface $e)
     {
-        $config = modCUP::getOption('field-settings');
         $section = $e->getTarget()->getSection('zfcuser');
+        $fieldSettings = $section->getFieldSettings();
         $data = $e->getParam('data');
         $user = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity();
         $form = $section->getForm();
         
         // Determine which fields should be validated
         $enabledFields = array();
-        foreach ($config['zfcuser'] as $fname=>$fsetting) {
+        foreach ($fieldSettings as $fname=>$fsetting) {
             if ($fsetting['displayed'] && $fsetting['editable']) {
                 $enabledFields[] = $fname;
             }
@@ -69,12 +40,15 @@ class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterfac
 
             // If they've changed the password, hash it
             if (in_array('password', $enabledFields)) {
-                $user->setPassword(Password::hash($user->getPassword()));
+                $moduleOptions = $this->getServiceLocator()->get('zfcuser_module_options');
+                $bcrypt = new Bcrypt;
+                $bcrypt->setCost($moduleOptions->getPasswordCost());
+                $user->setPassword($bcrypt->create($user->getPassword()));
             }
 
             //...and persist it
             $mapper = $this->getServiceLocator()->get('zfcuser_user_mapper');
-            $mapper->persist($user);
+            $mapper->update($user);
         }
     }
 
@@ -89,7 +63,9 @@ class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterfac
         $form = $this->getServiceLocator()->get('CdliUserProfile\Form\Section\ZfcUser');
 
         // Get User Account details
-        $userData = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity()->toArray();
+        $user = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity();
+        $userHydrator = $this->getServiceLocator()->get('zfcuser_user_hydrator');
+        $userData = $userHydrator->extract($user);
         unset($userData['password']);
 
         $form->setData($userData);
@@ -99,40 +75,6 @@ class ZfcUser implements ServiceLocatorAwareInterface, ListenerAggregateInterfac
         $obj->setViewScript('cdli-user-profile/profile/section/zfcuser');
         $obj->setViewScriptFormKey('registerForm');
         $e->getTarget()->addSection('zfcuser', $obj);
-    }
-
-    /**
-     * Detach all previously attached listeners
-     *
-     * @param EventManagerInterface $events
-     */
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
-    }
- 
-    /**
-     * Set the Service Locator instance
-     *
-     * @param ServiceLocatorInterface $locator
-     */
-    public function setServiceLocator(ServiceLocatorInterface $locator) 
-    {
-        $this->locator = $locator;
-    }
-    
-    /**
-     * Retrieve the injected Service Locator instance
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->locator;
     }
 
 }
