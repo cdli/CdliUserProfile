@@ -1,6 +1,6 @@
 CdliUserProfile
 ==================
-Version 0.0.1 Created by the Centre for Distance Learning and Innovation (www.cdli.ca)
+Version 0.0.2 Created by the Centre for Distance Learning and Innovation (www.cdli.ca)
 
 Introduction
 ------------
