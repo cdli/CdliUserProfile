@@ -7,14 +7,14 @@ use Zend\ModuleManager\ModuleManager,
     Zend\ModuleManager\Feature\AutoloaderProviderInterface,
     Zend\ModuleManager\Feature\BootstrapListenerInterface,
     Zend\ModuleManager\Feature\ConfigProviderInterface,
-    Zend\EventManager\Event;
+    Zend\EventManager\EventInterface;
 
 class Module implements
     BootstrapListenerInterface,
     AutoloaderProviderInterface,
     ConfigProviderInterface
 {
-    public function onBootstrap(Event $e)
+    public function onBootstrap(EventInterface $e)
     {
         $serviceManager = $e->getTarget()->getServiceManager();
         $profileEvents = $serviceManager->get('CdliUserProfile\Service\Profile')->getEventManager();
