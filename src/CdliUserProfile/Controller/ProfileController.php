@@ -18,15 +18,35 @@ class ProfileController extends AbstractActionController
      */
     public function indexAction()
     {
+        $messages = array();
+        $authService = $this->getServiceLocator()->get('zfcuser_auth_service');
         $service = $this->getProfileService();
         $sections = $service->getSections();
 
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost()) 
+        {
             $data = $this->getRequest()->getPost()->toArray();
-            $service->save($data);
+            if ( $service->save($data) ) 
+            {
+                $messages[] = array(
+                    'type'    => 'success',
+                    'icon'    => 'icon-ok-sign',
+                    'message' => 'Your profile has been updated successfully!',
+                );
+            }
+            else
+            {
+                $messages[] = array(
+                    'type'    => 'error',
+                    'icon'    => 'icon-remove-sign',
+                    'message' => 'Profile update failed!  See error messages below for more details.',
+                );
+            }
         }
 
         return new ViewModel(array(
+            'messages'      => $messages,
+            'user'          => $authService->getIdentity(),
             'sections'      => $sections,
             'fieldSettings' => $this->getModuleOptions()->getFieldSettings()
         ));

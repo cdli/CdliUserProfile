@@ -40,6 +40,7 @@ class Profile extends EventProvider
 
     public function save($data)
     {
-        $this->getEventManager()->trigger(__FUNCTION__, $this, array('data'=>$data));
+        $results = $this->getEventManager()->trigger(__FUNCTION__, $this, array('data'=>$data));
+        return ( $results->contains(false) === false );
     }
 }

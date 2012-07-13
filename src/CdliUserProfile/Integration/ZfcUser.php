@@ -49,6 +49,9 @@ class ZfcUser extends AbstractIntegration implements IntegrationInterface
             //...and persist it
             $mapper = $this->getServiceLocator()->get('zfcuser_user_mapper');
             $mapper->update($user);
+            return true;
+        } else {
+            return false;
         }
     }
 
