@@ -6,6 +6,7 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use CdliUserProfile\Service\Profile as ProfileService;
 
 abstract class AbstractIntegration implements ServiceLocatorAwareInterface, ListenerAggregateInterface
 {
@@ -23,6 +24,11 @@ abstract class AbstractIntegration implements ServiceLocatorAwareInterface, List
      * @var array
      */
     protected $fieldSettings;
+
+    /**
+     * @var ProfileService 
+     */
+    protected $profileService;
 
     /**
      * Attach one or more listeners
@@ -91,6 +97,29 @@ abstract class AbstractIntegration implements ServiceLocatorAwareInterface, List
     public function getFieldSettings()
     {
         return $this->fieldSettings;
+    }
+
+    /**
+     * Set Profile Service object
+     * 
+     * @param ProfileService $ps
+     */
+    public function setProfileService(ProfileService $ps)
+    {
+        $this->profileService = $ps;
+    }
+
+    /**
+     * Retrieve Profile Service object
+     *
+     * @return ProfileService
+     */
+    public function getProfileService()
+    {
+        if (is_null($this->profileService)) {
+            $this->profileService = $this->getServiceLocator()->get('CdliUserProfile\Service\Profile');
+        }
+        return $this->profileService;
     }
 
 }

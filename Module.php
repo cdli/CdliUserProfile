@@ -52,7 +52,7 @@ class Module implements
                     );
                 },
                 'cdliuserprofile_uemail_validator' => function($sm) {
-                    $user = $sm->get('zfcuser_auth_service')->getIdentity();
+                    $user = $sm->get('CdliUserProfile\Service\Profile')->getUser();
                     return new Validator\NoRecordExistsExceptIgnored(array(
                         'ignored_record_ids' => is_null($user) ? NULL : $user->getId(),
                         'mapper'             => $sm->get('zfcuser_user_mapper'),
@@ -60,7 +60,7 @@ class Module implements
                     ));
                 },
                 'cdliuserprofile_uusername_validator' => function($sm) {
-                    $user = $sm->get('zfcuser_auth_service')->getIdentity();
+                    $user = $sm->get('CdliUserProfile\Service\Profile')->getUser();
                     return new Validator\NoRecordExistsExceptIgnored(array(
                         'ignored_record_ids' => is_null($user) ? NULL : $user->getId(),
                         'mapper'             => $sm->get('zfcuser_user_mapper'),

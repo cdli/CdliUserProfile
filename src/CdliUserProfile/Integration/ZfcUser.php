@@ -13,7 +13,7 @@ class ZfcUser extends AbstractIntegration implements IntegrationInterface
         $section = $e->getTarget()->getSection('zfcuser');
         $fieldSettings = $section->getFieldSettings();
         $data = $e->getParam('data');
-        $user = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity();
+        $user = $this->getProfileService()->getUser();
         $form = $section->getForm();
         
         // Determine which fields should be validated
@@ -66,7 +66,7 @@ class ZfcUser extends AbstractIntegration implements IntegrationInterface
         $form = $this->getServiceLocator()->get('CdliUserProfile\Form\Section\ZfcUser');
 
         // Get User Account details
-        $user = $this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity();
+        $user = $this->getProfileService()->getUser();
         $userHydrator = $this->getServiceLocator()->get('zfcuser_user_hydrator');
         $userData = $userHydrator->extract($user);
         unset($userData['password']);

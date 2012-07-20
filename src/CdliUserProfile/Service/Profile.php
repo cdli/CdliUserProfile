@@ -9,6 +9,7 @@ class Profile extends EventProvider
 {
     protected $sections = NULL;
     protected $fieldSettings;
+    protected $user;
 
     public function __construct(ModuleOptions $options)
     {
@@ -42,5 +43,16 @@ class Profile extends EventProvider
     {
         $results = $this->getEventManager()->trigger(__FUNCTION__, $this, array('data'=>$data));
         return ( $results->contains(false) === false );
+    }
+
+    public function setUser($user)
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
     }
 }

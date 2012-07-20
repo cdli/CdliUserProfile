@@ -19,8 +19,8 @@ class ProfileController extends AbstractActionController
     public function indexAction()
     {
         $messages = array();
-        $authService = $this->getServiceLocator()->get('zfcuser_auth_service');
         $service = $this->getProfileService();
+        $service->setUser($this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity());
         $sections = $service->getSections();
 
         if ($this->getRequest()->isPost()) 
@@ -46,7 +46,7 @@ class ProfileController extends AbstractActionController
 
         return new ViewModel(array(
             'messages'      => $messages,
-            'user'          => $authService->getIdentity(),
+            'user'          => $service->getUser(),
             'sections'      => $sections,
             'fieldSettings' => $this->getModuleOptions()->getFieldSettings()
         ));
