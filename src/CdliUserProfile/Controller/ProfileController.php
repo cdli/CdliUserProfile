@@ -6,7 +6,6 @@ use Zend\Form\Form;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Stdlib\ResponseInterface as Response;
 use Zend\View\Model\ViewModel;
-use CdliUserProfile\Module as modCUP;
 
 class ProfileController extends AbstractActionController
 {
