@@ -1,4 +1,4 @@
-<h1><?php echo $this->escape($this->user->getDisplayName()); ?>'s Profile</h2>
+<h1><?php echo $this->escapeHtml($this->zfcUserDisplayName($this->user)); ?>'s Profile</h2>
 
 <?php if (isset($this->messages) && count($this->messages) > 0 ): ?>
 <?php foreach ($this->messages as $msg): ?>
@@ -10,7 +10,7 @@
 
 <form action="<?php echo $this->url('zfcuser/profile'); ?>" method="POST">
 <?php
-$FieldSettings = \CdliUserProfile\Module::getOption('field-settings');
+$FieldSettings = $this->options->getFieldSettings();
 foreach ( $this->sections as $name=>$section ) {
     $vm = $section->getViewModel();
     $vm->setVariable('fieldSettings', (array)@$FieldSettings[$name]);

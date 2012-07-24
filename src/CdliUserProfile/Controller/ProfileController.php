@@ -45,10 +45,10 @@ class ProfileController extends AbstractActionController
         }
 
         return new ViewModel(array(
-            'messages'      => $messages,
-            'user'          => $service->getUser(),
-            'sections'      => $sections,
-            'fieldSettings' => $this->getModuleOptions()->getFieldSettings()
+            'messages'  => $messages,
+            'user'      => $service->getUser(),
+            'sections'  => $sections,
+            'options'   => $this->getModuleOptions()
         ));
     }
 
