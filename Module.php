@@ -21,7 +21,7 @@ class Module implements
         $profileEvents->attachAggregate($serviceManager->get('CdliUserProfile\Integration\ZfcUser'));
     }
 
-    public function getServiceConfiguration()
+    public function getServiceConfig()
     {
         return array(
             'factories' => array(
