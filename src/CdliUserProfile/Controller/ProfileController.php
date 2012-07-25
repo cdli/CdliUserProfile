@@ -6,7 +6,6 @@ use Zend\Form\Form;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Stdlib\ResponseInterface as Response;
 use Zend\View\Model\ViewModel;
-use CdliUserProfile\Module as modCUP;
 
 class ProfileController extends AbstractActionController
 {
@@ -45,10 +44,10 @@ class ProfileController extends AbstractActionController
         }
 
         return new ViewModel(array(
-            'messages'      => $messages,
-            'user'          => $service->getUser(),
-            'sections'      => $sections,
-            'fieldSettings' => $this->getModuleOptions()->getFieldSettings()
+            'messages'  => $messages,
+            'user'      => $service->getUser(),
+            'sections'  => $sections,
+            'options'   => $this->getModuleOptions()
         ));
     }
 

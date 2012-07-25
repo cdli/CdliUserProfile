@@ -1,5 +1,5 @@
 {
-    "name": "cdli/CdliUserProfile",
+    "name": "cdli/user-profile",
     "description": "Extensible user profile system for ZfcUser",
     "version": "0.0.2",
     "type": "library",

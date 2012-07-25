@@ -11,7 +11,6 @@ return array(
     'CdliUserProfile\Model\ProfileSection'                  => __DIR__ . '/src/CdliUserProfile/Model/ProfileSection.php',
     'CdliUserProfile\Model\ProfileSectionInterface'         => __DIR__ . '/src/CdliUserProfile/Model/ProfileSectionInterface.php',
     'CdliUserProfile\Validator\NoRecordExistsExceptIgnored' => __DIR__ . '/src/CdliUserProfile/Validator/NoRecordExistsExceptIgnored.php',
-    'CdliUserProfile\Form\Profile'                          => __DIR__ . '/src/CdliUserProfile/Form/Profile.php',
     'CdliUserProfile\Form\Section\ZfcUser'                  => __DIR__ . '/src/CdliUserProfile/Form/Section/ZfcUser.php',
     'CdliUserProfile\Form\Section\ZfcUserFilter'            => __DIR__ . '/src/CdliUserProfile/Form/Section/ZfcUserFilter.php',
 );

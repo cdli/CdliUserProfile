@@ -6,6 +6,6 @@
     <?php   if ($element->getLabel() != null) { ?>
     <dt><?php echo $this->formLabel($element); ?></dt>
     <?php } ?>
-    <dd><?php echo ( @$this->fieldSettings[$settingsName]['editable'] === false ? $this->escape($element->getAttribute('value')) : $this->formInput($element) ) . $this->formElementErrors($element); ?></dd>
+    <dd><?php echo ( @$this->fieldSettings[$settingsName]['editable'] === false ? $this->escapeHtml($element->getAttribute('value')) : $this->formInput($element) ) . $this->formElementErrors($element); ?></dd>
 <?php }} ?>
 </dl>
