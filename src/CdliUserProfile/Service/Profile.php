@@ -36,6 +36,9 @@ class Profile extends EventProvider
 
     public function getSection($key)
     {
+        if ($this->sections === null) {
+            $this->getSections();
+        }
         return $this->sections[$key];
     }
 
