@@ -20,6 +20,11 @@ class ProfileController extends AbstractActionController
         $messages = array();
         $service = $this->getProfileService();
         $service->setUser($this->getServiceLocator()->get('zfcuser_auth_service')->getIdentity());
+
+        if (is_null($service->getUser())) {
+          $this->redirect()->toRoute('zfcuser');
+        }
+
         $sections = $service->getSections();
 
         if ($this->getRequest()->isPost()) 
