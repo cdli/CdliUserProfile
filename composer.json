@@ -19,6 +19,9 @@
         "zendframework/zendframework": "2.*",
         "zf-commons/zfc-user": "0.*"
     },
+    "suggest": {
+        "adamlundrigan/ldc-user-profile": "This module has been superseded by LdcUserProfile, use it instead/"
+    },
     "autoload": {
         "psr-0": {
             "CdliUserProfile": "src/"

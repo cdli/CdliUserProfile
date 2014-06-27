@@ -2,7 +2,7 @@ CdliUserProfile
 ==================
 Version 0.0.2 Created by the Centre for Distance Learning and Innovation (www.cdli.ca)
 
-**NOTE: This module is woefully out of date and probably should not be used **
+**NOTE: This module is woefully out of date and probably should not be used.  Check out [LdcUserProfile](https://github.com/adamlundrigan/LdcUserProfile) instead. **
 
 Introduction
 ------------
